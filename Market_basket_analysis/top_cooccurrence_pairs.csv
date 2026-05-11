@@ -1,0 +1,21 @@
+antecedents,consequents,support,confidence,lift,support_pct
+Pet Supplies,Toys,0.0403,0.1947,0.9276,4.03%
+Toys,Clothing,0.04,0.1908,0.9377,4.0%
+Beauty,Toys,0.0398,0.1867,0.8895,3.98%
+Books,Beauty,0.0395,0.2068,0.9701,3.95%
+Automotive,Sports,0.0376,0.1878,0.9885,3.76%
+Home & Kitchen,Automotive,0.0371,0.186,0.9303,3.71%
+Pet Supplies,Home & Kitchen,0.0366,0.1767,0.8869,3.66%
+Clothing,Home & Kitchen,0.0363,0.1785,0.896,3.63%
+Pet Supplies,Automotive,0.0358,0.1731,0.8656,3.58%
+Books,Toys,0.0353,0.1847,0.8797,3.53%
+Sports,Clothing,0.0343,0.1806,0.8879,3.43%
+Pet Supplies,Books,0.0341,0.1647,0.861,3.41%
+Clothing,Books,0.0338,0.1663,0.8693,3.38%
+Clothing,Automotive,0.0336,0.165,0.8254,3.36%
+Clothing,Electronics,0.0333,0.1638,0.8701,3.33%
+Sports,Pet Supplies,0.0331,0.1741,0.8413,3.31%
+Sports,Home & Kitchen,0.0328,0.1728,0.8673,3.28%
+Automotive,Electronics,0.0323,0.1617,0.8589,3.23%
+Home & Kitchen,Electronics,0.0321,0.161,0.8555,3.21%
+Electronics,Books,0.0318,0.1691,0.8841,3.18%
