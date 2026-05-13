@@ -1,63 +1,41 @@
+import sqlite3
 import pandas as pd
 
-# Load data
-rfm = pd.read_csv("RESULT.csv")
+print("Starting Ecommerce Database Setup...")
 
-print(rfm.head())
-print(rfm.dtypes)
-print(rfm.describe())
+conn = sqlite3.connect('ecommerce.db')
+cursor = conn.cursor()
 
-# Convert to numeric (important)
-rfm['Recency'] = pd.to_numeric(rfm['Recency'], errors='coerce')
-rfm['Frequency'] = pd.to_numeric(rfm['Frequency'], errors='coerce')
-rfm['Monetary'] = pd.to_numeric(rfm['Monetary'], errors='coerce')
+# Task 2: Create Tables
+print("\n Task 2: Creating tables...")
+with open('create_tables.sql', 'r') as f:
+    sql = f.read()
+cursor.executescript(sql)
+print("Tables created!")
 
-# Drop missing values
-rfm = rfm.dropna()
+# Task 3: Load Data
+print("\n Task 3: Loading data...")
+pd.read_csv('users.csv').to_sql('dim_user', conn, if_exists='replace', index=False)
+pd.read_csv('products.csv').to_sql('dim_product', conn, if_exists='replace', index=False)
+pd.read_csv('orders.csv').to_sql('dim_order', conn, if_exists='replace', index=False)
+pd.read_csv('order_items.csv').to_sql('fact_sales', conn, if_exists='replace', index=False)
+pd.read_csv('reviews.csv').to_sql('dim_review', conn, if_exists='replace', index=False)
+pd.read_csv('events.csv').to_sql('dim_event', conn, if_exists='replace', index=False)
+print("Data loaded!")
 
-# RFM Score (SAFE version)
-rfm['R_score'] = pd.qcut(rfm['Recency'], 5, labels=[5,4,3,2,1], duplicates='drop')
-rfm['F_score'] = pd.qcut(rfm['Frequency'].rank(method='first'), 5, labels=[1,2,3,4,5], duplicates='drop')
-rfm['M_score'] = pd.qcut(rfm['Monetary'], 5, labels=[1,2,3,4,5], duplicates='drop')
+# Task 4 & 5: Indexes
+print("\n Task 4 & 5: Adding indexes...")
+with open('optimize.sql', 'r') as f:
+    sql = f.read()
+cursor.executescript(sql)
+print("Indexes added!")
 
-# Convert to int
-rfm['R_score'] = rfm['R_score'].astype(int)
-rfm['F_score'] = rfm['F_score'].astype(int)
-rfm['M_score'] = rfm['M_score'].astype(int)
+# Task 6 & 7: Views
+print("\n Task 6 & 7: Creating views...")
+with open('views.sql', 'r') as f:
+    sql = f.read()
+cursor.executescript(sql)
+print("Views created!")
 
-# Combine score
-rfm['RFM_Score'] = (
-    rfm['R_score'].astype(str) +
-    rfm['F_score'].astype(str) +
-    rfm['M_score'].astype(str)
-)
-
-# Assign Segments
-def segment(row):
-    if row['R_score'] == 5 and row['F_score'] >= 4 and row['M_score'] >= 4:
-        return 'Champions'
-    elif row['R_score'] >= 4 and row['F_score'] >= 3:
-        return 'Loyal Customers'
-    elif row['R_score'] >= 4:
-        return 'Potential Loyalists'
-    elif row['R_score'] == 3:
-        return 'Need Attention'
-    elif row['R_score'] <= 2 and row['F_score'] >= 3:
-        return 'At Risk'
-    else:
-        return 'Hibernating'
-
-rfm['Segment'] = rfm.apply(segment, axis=1)
-
-# Output
-print(rfm.head())
-
-print("\nSegment Distribution:\n")
-print(rfm['Segment'].value_counts())
-
-# Validation 
-print("\nValidation:\n")
-print(rfm.groupby('Segment')[['Recency','Frequency','Monetary']].mean())
-
-# Save final file
-rfm.to_excel("final_rfm.xlsx", index=False)
+conn.close()
+print("\n All tasks completed successfully!")
